@@ -8,6 +8,7 @@ import { Eye, Fingerprint, Scan } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useTheme } from "@/components/theme-context"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react";
 
 const sliderContent = [
   {
@@ -35,6 +36,7 @@ export default function LoginPage() {
   const { theme } = useTheme()
   const [error, setError] = useState("");
   const router = useRouter()
+  const { data: session, status } = useSession(); // UseSession hook here, outside handleSubmit
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,39 +45,21 @@ export default function LoginPage() {
 
     return () => clearInterval(timer)
   }, [])
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setError(""); // Clear any previous errors
-  
-  //   console.log("Submit button clicked");
-  //   const result = await signIn("credentials", {
-  //     email,
-  //     password,
-  //     redirect: false, // Prevent automatic redirection
-  //   });
-  
-  //   if (result?.error) {
-  //     console.error("Sign-in error:", result.error);
-  //     setError(result.error); // Display the error message
-  //   } else if (result?.ok) {
-  //     console.log("Sign-in successful!");
-  //     router.push(result.url || "/"); // Redirect to the desired page
-  //   }
-  // };
-  
-
-
-
-
-
-
+//its working here
+  useEffect(() => {
+    if (session) {
+      const role = session?.user?.role;
+      if (role === "user1") {
+        router.push("/"); // Redirect buyer
+      } else if (role === "user2") {
+        router.push("/dealer") ; // Redirect dealer
+      }
+    }
+  }, [session, router]); // Redirect when session changes
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
-  
-    console.log("Submit button clicked");
+    setError(""); // Clear previous errors
   
     const result = await signIn("credentials", {
       email,
@@ -85,16 +69,16 @@ export default function LoginPage() {
   
     if (result?.error) {
       console.error("Sign-in error:", result.error);
-      setError(result.error); // Display the error message
+      setError(result.error); // Display error
     } else if (result?.ok) {
-      console.log("Sign-in successful!");
-      // Explicitly push to the home page or desired route
-      router.push("/");
+      console.log("Sign-in successful");
+      // The redirection is handled by useEffect after session change
     } else {
       console.error("Unexpected error during sign-in.");
       setError("An unexpected error occurred. Please try again.");
     }
   };
+  
   
   return (
     <div className={`flex h-screen ${theme === "dark" ? "bg-[#0a0a0a] text-white" : "bg-white text-black"}`}>

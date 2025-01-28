@@ -316,14 +316,8 @@ import { signOut } from "next-auth/react"
 import PriceRangeSlider from "./PriceRangeSlider"
 
 
-
-
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-
-
-
 
 
 
@@ -335,11 +329,14 @@ export default function CarListingPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isLargeScreen, setIsLargeScreen] = useState(false)
 
+  const { data: session } = useSession();
+  const router = useRouter();
+
   useEffect(() => {
     const checkScreenSize = () => {
       setIsLargeScreen(window.innerWidth >= 1024)
       if (window.innerWidth >= 1024) {
-        setSidebarOpen(true)
+        setSidebarOpen(false)
       }
     }
 
@@ -349,21 +346,25 @@ export default function CarListingPage() {
   }, [])
 
 
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
   useEffect(() => {
-    if (status === "loading") return; // Wait for session to load
-    if (!session) router.push("/login"); // Redirect if unauthenticated
-  }, [status, session, router]);
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden"; // Disable scrolling
+    } else {
+      document.body.style.overflow = ""; // Re-enable scrolling
+    }
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  router.push("/");
-
-
+    return () => {
+      document.body.style.overflow = ""; // Cleanup on unmount
+    };
+  }, [sidebarOpen]);
+  
+  const handleAuthAction = () => {
+    if (session) {
+      signOut({ callbackUrl: "/login" }); // Redirect to login page after signing out
+    } else {
+      router.push("/login"); // Navigate to login page
+    }
+  };
 
 
   const toggleSidebar = () => {
@@ -371,6 +372,22 @@ export default function CarListingPage() {
       setSidebarOpen(!sidebarOpen)
     }
   }
+
+
+  useEffect(() => {
+    if (session) {
+      const role = session?.user?.role;
+      if (role === "user2") {
+        router.push("/dealer"); // Redirect buyer to home
+      } else if (role === "user1") {
+        // Do nothing for dealer, no redirect needed
+        return;
+      }
+    } else {
+      return; // Redirect to home if no user is logged in
+    }
+  }, [session, router]);
+
 
   return (
     <div className="min-h-screen theme-bg  theme-text">
@@ -390,14 +407,13 @@ export default function CarListingPage() {
                 </div>
                 <div className="flex items-center space-x-6">
                 <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => signOut({ callbackUrl: "/login" })} // Redirects to login page after sign out
-                  className="theme-button-outline theme-button-solid w-40"
-                >
-                Sign Out
-                </Button>
-
+              variant="outline"
+              size="icon"
+              onClick={handleAuthAction}
+              className="theme-button-outline theme-button-solid w-16 "
+            >
+              {session ? "Sign Out" : "Sign In"}
+            </Button>
 
                   <Button
                     variant="outline"
@@ -416,7 +432,7 @@ export default function CarListingPage() {
                     <Bell className="h-6 w-6" />
                   </Button>
       
-                  <ProfileMenu />
+                  {/* <ProfileMenu /> */}
                 </div>
               </div>
             </header>
@@ -425,13 +441,13 @@ export default function CarListingPage() {
       <div className="max-w-[1600px] mx-auto overflow-y-auto py-10 px-6 flex flex-col lg:flex-row relative">
         {/* Sidebar */}
         <aside className={`
-          lg:w-80 lg:mr-10 
-          fixed lg:static top-0 left-0 h-full z-10 
+          lg:w-80  lg:mr-10 
+          fixed lg:static top-0 pt-20 lg:pt-0 left-0 h-full z-10 
           theme-sidebar
           transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}>
-          <div className="theme-sidebar-content p-6 overflow-y-auto rounded-lg sm:h-full lg:h-[calc(100vh-80px)] custom-scrollbar">
+          <div className="theme-sidebar-content p-6 overflow-y-auto rounded-lg h-full lg:h-[calc(100vh-80px)] custom-scrollbar">
             <h2 className="text-3xl font-semibold mb-6 theme-text">Filters</h2>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
@@ -531,34 +547,61 @@ export default function CarListingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {carData.map((car) => (
-              <Card key={car.id} className="theme-card text-lg theme-text hover-scale overflow-x-hidden">
-                <CardContent className="p-6">
-                  <div className="image-zoom rounded-lg overflow-hidden mb-6">
-                    <img src={car.image || "/placeholder.svg"} alt={car.name} className="w-full h-64 object-cover" />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-4">{car.name}</h3>
-                  <p className="mb-4 text-lg theme-text">
-                    {car.type} • {car.fuel} • {car.transmission}
-                  </p>
-                  <p className="font-bold text-xl">{car.price.toLocaleString()} $</p>
-                </CardContent>
-                <CardFooter className="flex justify-between p-6 theme-card theme-footer">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="button-hover  theme-button-solid theme-button-outline px-6 py-3 text-lg"
-                  >
-                    <Car className="mr-3 h-5 w-5" /> AR View
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="button-hover theme-button-outline  theme-button-solid px-6 py-3 text-lg"
-                  >
-                    Details
-                  </Button>
-                </CardFooter>
-              </Card>
+              <Card 
+              key={car.id} 
+              className="theme-card text-lg theme-text hover-scale flex flex-col overflow-x-hidden"
+            >
+              <CardContent className="p-6 flex-grow">
+                {/* Image Container */}
+                <div className="image-zoom rounded-lg overflow-hidden mb-6">
+                  <img 
+                    src={car.image || "/placeholder.svg"} 
+                    alt={car.name} 
+                    className="w-full object-cover h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72" 
+                  />
+                </div>
+                
+                {/* Car Name */}
+                <h3 className="text-2xl font-semibold mb-4 text-center lg:text-left">
+                  {car.name}
+                </h3>
+              
+                {/* Car Details */}
+                <p className="mb-4 text-lg theme-text text-center lg:text-left">
+                  {car.type} • {car.fuel} • {car.transmission}
+                </p>
+              
+                {/* Price */}
+                <p className="font-bold text-xl text-center lg:text-left">
+                  {car.price.toLocaleString()} $
+                </p>
+              </CardContent>
+              
+              <CardFooter 
+                className="flex flex-col sm:flex-col md:flex-col lg:flex-col xl:flex-row justify-center xl:justify-between items-center gap-4 p-6 theme-card theme-footer mt-auto"
+              >
+                {/* AR View Button */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="button-hover theme-button-solid theme-button-outline px-6 py-3 text-lg w-full xl:w-auto"
+                >
+                  <Car className="mr-3 h-5 w-5" /> AR View
+                </Button>
+            
+                {/* Details Button */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="button-hover theme-button-outline theme-button-solid px-6 py-3 text-lg w-full xl:w-auto"
+                >
+                  Details
+                </Button>
+              </CardFooter>
+            </Card>
+            
+            
+            
             ))}
           </div>
         </div>

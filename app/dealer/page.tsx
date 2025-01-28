@@ -8,11 +8,33 @@ import { Input } from "@/components/ui/input"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { formatCurrency } from "@/utils/formatCurrency"
 import type { OverviewCardData, ChartData, InventoryItem, Inquiry } from "@/types/dashboard"
+import {
+  Search,
+  
+  User,
+  Heart,
+  ContrastIcon as Compare,
+  
+  Calendar,
+  Sun,
+  Moon,
+  Menu,
+} from "lucide-react"
 
 import OverviewCard from "../../components/ui/Dealer/OverviewCard"
 import InventoryTable from "../../components/ui/Dealer/InventoryTable"
 import InquiryList from "../../components/ui/Dealer/InquiryList"
 import PromotionForm from "../../components/ui/Dealer/PromotionForm"
+import { useTheme } from "@/components/theme-context"
+
+
+
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+import { signOut } from "next-auth/react"
+
 
 export default function DealerDashboard() {
   const [notifications, setNotifications] = useState(3)
@@ -21,6 +43,10 @@ export default function DealerDashboard() {
   const [engagementData, setEngagementData] = useState<ChartData[]>([])
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([])
   const [inquiryData, setInquiryData] = useState<Inquiry[]>([])
+
+  const { theme, toggleTheme } = useTheme()
+
+
 
   useEffect(() => {
     // Simulating API calls to fetch data
@@ -31,6 +57,33 @@ export default function DealerDashboard() {
     fetchInquiryData()
   }, [])
 
+ const router = useRouter()
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    if (session) {
+      const role = session?.user?.role;
+      if (role === "user1") {
+        router.push("/"); // Redirect buyer to home
+      } else if (role === "user2") {
+        // Do nothing for dealer, no redirect needed
+        return;
+      }
+    } else {
+      router.push("/"); // Redirect to home if no user is logged in
+    }
+  }, [session, router]);
+
+
+
+  
+
+   const handleAuthAction = () => {
+      if (session) {
+        signOut({ callbackUrl: "/login" }); // Redirect to login page after signing out
+      } else {
+        router.push("/login"); // Navigate to login page
+      }
+    };
   const fetchOverviewData = () => {
     // Simulated API call
     const data: OverviewCardData[] = [
@@ -103,15 +156,33 @@ export default function DealerDashboard() {
     <div className="min-h-screen theme-bg">
       {/* Header */}
       <header className="theme-header p-8 flex justify-between items-center">
-        <h1 className="text-4xl font-bold theme-text">Dealer Dashboard</h1>
-        <Button variant="outline" className="theme-button-outline relative p-4">
-          <Bell className="h-8 w-8" />
-          {notifications > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg">
-              {notifications}
-            </span>
-          )}
+        <h1 className="md:text-4xl sm:text-2xl font-bold theme-text">Dealer Dashboard</h1>
+        <div className="flex items-center ml-auto space-x-4"> {/* Add ml-auto here */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={handleAuthAction}
+        className="theme-button-outline theme-button-solid w-16"
+      >
+        {session ? "Sign Out" : "Sign In"}
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={toggleTheme}
+        className="theme-button-outline theme-button-solid ">
+          {theme === "dark" ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
         </Button>
+
+      <Button variant="outline" className="theme-button-outline relative p-4">
+        <Bell className="h-8 w-8" />
+        {notifications > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg">
+            {notifications}
+          </span>
+        )}
+      </Button>
+    </div>
       </header>
 
       {/* Main Content */}
@@ -135,7 +206,7 @@ export default function DealerDashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" tick={{ fontSize: 14 }} />
                   <YAxis tick={{ fontSize: 14 }} />
-                  <Tooltip contentStyle={{ fontSize: 14 }} />
+                  <Tooltip contentStyle={{ fontSize: 14 } } />
                   <Legend wrapperStyle={{ fontSize: 14 }} />
                   <Bar dataKey="value" name="Sales" fill="var(--chart-1)" />
                 </BarChart>

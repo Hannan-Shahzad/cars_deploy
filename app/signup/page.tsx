@@ -6,6 +6,7 @@ import { Eye, Mail, MapPin, Phone } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useTheme } from "@/components/theme-context"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react";
 
 const sliderContent = [
   {
@@ -35,10 +36,26 @@ export default function SignupPage() {
     password: "",
     phone: "",
     location: "",
+    role: "user1",
   });
 
+  const { data: session, status } = useSession();
+  const router = useRouter()
+
+
+  useEffect(() => {
+    if (session) {
+      const role = session?.user?.role;
+      if (role === "user1") {
+        router.push("/"); // Redirect buyer
+      } else if (role === "user2") {
+        router.push("/dealer"); // Redirect dealer
+      }
+    }
+  }, [session, router]);
+
   const { theme } = useTheme();
-  const router = useRouter();
+ 
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -56,6 +73,13 @@ export default function SignupPage() {
     }));
   };
 
+
+
+
+    
+  
+    
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -78,6 +102,12 @@ export default function SignupPage() {
       alert(error.message);
     }
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
 
   return (
     <div className={`flex h-screen ${theme === "dark" ? "bg-[#0a0a0a] text-white" : "bg-white text-black"}`}>
@@ -110,7 +140,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right side - Signup Form */}
-      <div className="w-full lg:w-2/5 flex justify-center p-4 lg:p-8 overflow-y-auto custom-scrollbar">
+      <div className="w-full lg:w-2/5 flex justify-center p-4 lg:p-8 overflow-y-auto ">
         <div className="w-full max-w-lg space-y-8 pt-8">
           <div className="flex justify-center items-center mb-8">
             <div className="w-32 h-32 bg-[#f2b705] rounded-full flex items-center justify-center">
@@ -247,6 +277,47 @@ export default function SignupPage() {
                 </button>
               </div>
             </div>
+            <div>
+  <label
+    className={`text-lg block ${
+      theme === "dark" ? "text-[#f2b705]" : "text-black"
+    }`}
+  >
+    Role
+  </label>
+  <div className="flex items-center space-x-10 pl-4">
+    <label
+      className={`flex items-center space-x-2 ${
+        theme === "dark" ? "text-[#f2b705]" : "text-black"
+      }`}
+    >
+      <input
+        type="radio"
+        name="role"
+        value="user1"
+        checked={formData.role === "user1"}
+        onChange={handleInputChange}
+        className="appearance-none w-4 h-4 border border-gray-400 rounded-full checked:bg-[#f2b705] checked:border-transparent focus:outline-none"
+      />
+      <span>Buyer</span>
+    </label>
+    <label
+      className={`flex items-center space-x-2 ${
+        theme === "dark" ? "text-[#f2b705]" : "text-black"
+      }`}
+    >
+      <input
+        type="radio"
+        name="role"
+        value="user2"
+        checked={formData.role === "user2"}
+        onChange={handleInputChange}
+        className="appearance-none w-4 h-4 border border-gray-400 rounded-full checked:bg-[#f2b705] checked:border-transparent focus:outline-none"
+      />
+      <span>Dealer</span>
+    </label>
+  </div>
+      </div>
 
             <button
               type="submit"
