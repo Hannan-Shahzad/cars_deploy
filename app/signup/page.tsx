@@ -7,24 +7,9 @@ import { useState, useEffect } from "react"
 import { useTheme } from "@/components/theme-context"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react";
+import Slider from "@/components/ui/slider"
 
-const sliderContent = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80",
-    text: "Join our community of luxury car enthusiasts",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-    text: "Get access to exclusive deals and offers",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1783&q=80",
-    text: "Experience the thrill of luxury driving",
-  },
-]
+
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,27 +28,10 @@ export default function SignupPage() {
   const router = useRouter()
 
 
-  useEffect(() => {
-    if (session) {
-      const role = session?.user?.role;
-      if (role === "user1") {
-        router.push("/"); // Redirect buyer
-      } else if (role === "user2") {
-        router.push("/dealer"); // Redirect dealer
-      }
-    }
-  }, [session, router]);
+
 
   const { theme } = useTheme();
  
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % sliderContent.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -112,32 +80,7 @@ export default function SignupPage() {
   return (
     <div className={`flex h-screen ${theme === "dark" ? "bg-[#0a0a0a] text-white" : "bg-white text-black"}`}>
       {/* Left side - Image Slider */}
-      <div className="hidden lg:flex lg:w-3/5 relative overflow-hidden">
-        {sliderContent.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <Image
-              src={slide.image || "/placeholder.svg"}
-              alt={`Luxury Car ${index + 1}`}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/50 to-transparent" />
-            <div className="absolute bottom-10 left-10 text-white z-10">
-              <h1 className={`text-4xl lg:text-6xl ${theme === "dark" ? "text-white" : "text-black"} font-bold mb-6`}>
-                NKRY CARS
-              </h1>
-              <p className={`text-xl lg:text-3xl ${theme === "dark" ? "text-white" : "text-black"} max-w-md`}>
-                {slide.text}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Slider/>
 
       {/* Right side - Signup Form */}
       <div className="w-full lg:w-2/5 flex justify-center p-4 lg:p-8 overflow-y-auto ">

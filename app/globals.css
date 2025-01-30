@@ -11,6 +11,12 @@ body {
   width: 10px;
   /* Adjust the width of the scrollbar */
 }
+
+.chart-theme {
+  @apply fill-black dark:fill-[#f2b705];
+}
+
+
 /* 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #f2b705;
@@ -178,7 +184,8 @@ body {
   .theme-input {
     @apply bg-gray-100 dark:bg-gray-200 dark:text-black focus:ring-2 focus:outline-none;
   }
-  
+
+ 
   .theme-input:focus {
     --tw-ring-color: black;
   }
