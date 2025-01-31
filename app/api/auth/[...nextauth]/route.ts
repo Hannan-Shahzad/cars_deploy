@@ -162,7 +162,7 @@ const handler = NextAuth({
     updateAge: 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }:any) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
