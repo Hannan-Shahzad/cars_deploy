@@ -1,19 +1,19 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Eye, Mail, MapPin, Phone } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState} from "react"
+
 import { useTheme } from "@/components/theme-context"
+
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react";
 import Slider from "@/components/ui/slider"
 
+import Error from "next/error"
 
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,7 +24,7 @@ export default function SignupPage() {
     role: "user1",
   });
 
-  const { data: session, status } = useSession();
+ 
   const router = useRouter()
 
 
@@ -66,8 +66,8 @@ export default function SignupPage() {
 
       alert("Account created successfully! Please sign in.");
       router.push("/login");
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error: Error | unknown) {
+      alert("Failed to create account. Please try again.");
     }
   };
 

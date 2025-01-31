@@ -232,7 +232,7 @@
 //dealer/page.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect} from "react";
 import DealerHeader from "@/components/ui/Dealer/DealerHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/User/card";
 import { Button } from "@/components/ui/button";
@@ -258,7 +258,7 @@ import InventoryTable from "../../components/ui/Dealer/InventoryTable";
 import InquiryList from "../../components/ui/Dealer/InquiryList";
 import PromotionForm from "../../components/ui/Dealer/PromotionForm";
 import QuickActions from "../../components/ui/Dealer/QuickActions";
-import { useTheme } from "@/components/theme-context";
+
 
 
 interface TooltipProps {

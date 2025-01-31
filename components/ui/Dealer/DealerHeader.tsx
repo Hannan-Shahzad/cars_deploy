@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, Menu, Bell } from "lucide-react";
+import { Sun, Moon, Bell } from "lucide-react";
 import { useTheme } from "@/components/theme-context";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";

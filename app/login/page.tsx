@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Eye, Fingerprint, Scan } from "lucide-react";
 import { useTheme } from "@/components/theme-context";
 import Slider from "@/components/ui/slider";
@@ -136,7 +135,8 @@ export default function LoginPage() {
           )}
 
           <p className="mt-6 text-center text-sm">
-            Don't have an account?{" "}
+            Don't have an account?
+            
             <Link
               href="/signup"
               className="font-semibold text-[#f2b705] hover:text-[#f2b705]/80"
