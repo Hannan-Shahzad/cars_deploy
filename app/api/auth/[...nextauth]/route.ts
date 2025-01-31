@@ -102,20 +102,11 @@
 
 
 
-
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { dbConnect } from "@/lib/mongodb";
 import User from "@/models/userModel";
 import bcrypt from "bcrypt";
-import { JWT } from "next-auth/jwt";
-import { Session } from "next-auth";
-
-
-interface Credentials {
-  email: string;
-  password: string;
-}
 
 const handler = NextAuth({
   providers: [
@@ -125,7 +116,7 @@ const handler = NextAuth({
         email: { label: "Email", type: "email", placeholder: "example@example.com" },
         password: { label: "Password", type: "password", placeholder: "Your password" },
       },
-      async authorize(credentials: Credentials | undefined) {
+      async authorize(credentials) {
         try {
           if (!credentials) throw new Error("Missing credentials");
 
@@ -162,7 +153,7 @@ const handler = NextAuth({
     updateAge: 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user }:any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -171,10 +162,10 @@ const handler = NextAuth({
       }
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
       if (token) {
         session.user = {
-         
+          id: token.id as string,
           name: token.name as string,
           email: token.email as string,
           role: token.role as string,
@@ -183,6 +174,6 @@ const handler = NextAuth({
       return session;
     },
   },
-} as AuthOptions);
+});
 
 export { handler as GET, handler as POST };
