@@ -17,7 +17,7 @@ export default function LoginPage() {
   const { theme } = useTheme();
   const [error, setError] = useState("");
   const router = useRouter();
-  const { data: session } = useSession();
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

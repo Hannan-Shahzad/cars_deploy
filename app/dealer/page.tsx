@@ -260,10 +260,6 @@ import PromotionForm from "../../components/ui/Dealer/PromotionForm";
 import QuickActions from "../../components/ui/Dealer/QuickActions";
 import { useTheme } from "@/components/theme-context";
 
-function useChartColor(element: "line" | "text"): string {
-  const { theme } = useTheme();
-  return useMemo(() => (theme === "dark" ? "#f2b705" : "black"), [theme]);
-}
 
 interface TooltipProps {
   active?: boolean;
@@ -290,8 +286,7 @@ export default function DealerDashboard() {
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
   const [inquiryData, setInquiryData] = useState<Inquiry[]>([]);
 
-  const lineColor = useChartColor("line");
-  const textColor = useChartColor("text");
+ 
 
   useEffect(() => {
     fetchOverviewData();
@@ -397,8 +392,8 @@ export default function DealerDashboard() {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend formatter={(value, entry, index) => <span style={{ color: textColor }}>{value}</span>} />
-                  <Bar dataKey="value" name="Sales" fill={lineColor} />
+                  <Legend formatter={(value,) => <span >{value}</span>} />
+                  <Bar dataKey="value" name="Sales" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -425,7 +420,7 @@ export default function DealerDashboard() {
                     type="monotone"
                     dataKey="value"
                     name="Engagement"
-                    stroke={lineColor}
+                    
                     dot={false}
                     strokeWidth={2}
                   />
