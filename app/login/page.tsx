@@ -134,16 +134,16 @@ export default function LoginPage() {
             <p className="text-red-600 mt-4 text-center">Invalid Credientials</p>
           )}
 
-          <p className="mt-6 text-center text-sm">
-            Don't have an account?
-            
-            <Link
-              href="/signup"
-              className="font-semibold text-[#f2b705] hover:text-[#f2b705]/80"
+        <p className="mt-6 text-center text-sm">
+          Don&apos;t have an account? 
+          <Link
+            href="/signup"
+            className="font-semibold text-[#f2b705] hover:text-[#f2b705]/80"
             >
-              Sign Up
-            </Link>
-          </p>
+            Sign Up
+          </Link>
+        </p>
+
         </div>
       </div>
     </div>

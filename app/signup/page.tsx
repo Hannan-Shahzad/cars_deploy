@@ -66,9 +66,10 @@ export default function SignupPage() {
 
       alert("Account created successfully! Please sign in.");
       router.push("/login");
-    } catch (error: Error | unknown) {
+    } catch {
       alert("Failed to create account. Please try again.");
     }
+    
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
