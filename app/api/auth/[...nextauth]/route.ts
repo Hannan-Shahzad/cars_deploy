@@ -1,5 +1,8 @@
 
 
+
+
+
 // // /app/auth/[...nextauth]/route.ts
 // import NextAuth from "next-auth";
 // import CredentialsProvider from "next-auth/providers/credentials";
@@ -32,12 +35,14 @@
 //           if (!isPasswordCorrect) throw new Error("Invalid password");
 
 //           // Return user details, including role
-//           return {
+//           const userData = {
 //             id: user._id.toString(),
 //             name: user.firstName,
 //             email: user.email,
 //             role: user.role, // Include role in returned user
 //           };
+//           console.log("Authorized user:", userData); // Log the authorized user
+//           return userData;
 //         } catch (error: any) {
 //           console.error("Authorization error:", error.message);
 //           return null; // Handle errors gracefully
@@ -52,6 +57,8 @@
 //   secret: process.env.NEXTAUTH_SECRET,
 //   session: {
 //     strategy: "jwt",
+//     maxAge: 60 * 60 * 24, // 1 day (in seconds)
+//     updateAge: 60 * 60, // Update session every 1 hour
 //   },
 //   callbacks: {
 //     async jwt({ token, user }: any) {
@@ -61,6 +68,7 @@
 //         token.email = user.email;
 //         token.role = user.role; // Include role in token
 //       }
+//       console.log("JWT token:", token); // Log the JWT token
 //       return token;
 //     },
 //     async session({ session, token }: any) {
@@ -72,6 +80,7 @@
 //           role: token.role, // Include role in session
 //         };
 //       }
+//       console.log("Session:", session); // Log the session
 //       return session;
 //     },
 //   },
@@ -85,12 +94,27 @@
 
 
 
-// /app/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
+
+
+
+
+
+
+
+
+
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { dbConnect } from "@/lib/mongodb";
 import User from "@/models/userModel";
 import bcrypt from "bcrypt";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
+
+interface Credentials {
+  email: string;
+  password: string;
+}
 
 const handler = NextAuth({
   providers: [
@@ -100,72 +124,64 @@ const handler = NextAuth({
         email: { label: "Email", type: "email", placeholder: "example@example.com" },
         password: { label: "Password", type: "password", placeholder: "Your password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials: Credentials | undefined) {
         try {
-          // Connect to the database
+          if (!credentials) throw new Error("Missing credentials");
+
+          const { email, password } = credentials;
           await dbConnect();
 
-          const { email, password }: any = credentials || {};
-          if (!email || !password) throw new Error("Missing email or password");
-
-          // Find user in the database
           const user = await User.findOne({ email });
           if (!user) throw new Error("No user found with this email");
 
-          // Validate password
           const isPasswordCorrect = await bcrypt.compare(password, user.password);
           if (!isPasswordCorrect) throw new Error("Invalid password");
 
-          // Return user details, including role
-          const userData = {
+          return {
             id: user._id.toString(),
             name: user.firstName,
             email: user.email,
-            role: user.role, // Include role in returned user
+            role: user.role,
           };
-          console.log("Authorized user:", userData); // Log the authorized user
-          return userData;
-        } catch (error: any) {
-          console.error("Authorization error:", error.message);
-          return null; // Handle errors gracefully
+        } catch (error: unknown) {
+          console.error("Authorization error:", (error as Error).message);
+          return null;
         }
       },
     }),
   ],
   pages: {
     signIn: "/",
-    error: "/login", // Redirect to login on error
+    error: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24, // 1 day (in seconds)
-    updateAge: 60 * 60, // Update session every 1 hour
+    maxAge: 60 * 60 * 24,
+    updateAge: 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
-        token.role = user.role; // Include role in token
+        token.role = user.role;
       }
-      console.log("JWT token:", token); // Log the JWT token
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         session.user = {
-          id: token.id,
-          name: token.name,
-          email: token.email,
-          role: token.role, // Include role in session
+         
+          name: token.name as string,
+          email: token.email as string,
+          role: token.role as string,
         };
       }
-      console.log("Session:", session); // Log the session
       return session;
     },
   },
-});
+} as AuthOptions);
 
 export { handler as GET, handler as POST };

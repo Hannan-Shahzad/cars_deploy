@@ -229,15 +229,14 @@
 
 
 
+//dealer/page.tsx
+"use client";
 
-"use client"
-
-import { useState, useEffect, useMemo } from "react"
-import DealerHeader from "@/components/ui/Dealer/DealerHeader"
-import { Search } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/User/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useEffect, useMemo } from "react";
+import DealerHeader from "@/components/ui/Dealer/DealerHeader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/User/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   BarChart,
   Bar,
@@ -249,64 +248,58 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"
-import { formatCurrency } from "@/utils/formatCurrency"
-import type { OverviewCardData, ChartData, InventoryItem, Inquiry } from "@/types/dashboard"
-import { FaCar, FaDollarSign, FaUsers, FaPercent } from "react-icons/fa" // Example using Font Awesome icons
-import OverviewCard from "../../components/ui/Dealer/OverviewCard"
-import InventoryTable from "../../components/ui/Dealer/InventoryTable"
-import InquiryList from "../../components/ui/Dealer/InquiryList"
-import PromotionForm from "../../components/ui/Dealer/PromotionForm"
-import QuickActions from "../../components/ui/Dealer/QuickActions"
-import { useTheme } from "@/components/theme-context"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+} from "recharts";
+import { Search,  } from "lucide-react"
+import { formatCurrency } from "@/utils/formatCurrency";
+import type { OverviewCardData, ChartData, InventoryItem, Inquiry } from "@/types/dashboard";
+import { FaCar, FaDollarSign, FaUsers, FaPercent } from "react-icons/fa";
+import OverviewCard from "../../components/ui/Dealer/OverviewCard";
+import InventoryTable from "../../components/ui/Dealer/InventoryTable";
+import InquiryList from "../../components/ui/Dealer/InquiryList";
+import PromotionForm from "../../components/ui/Dealer/PromotionForm";
+import QuickActions from "../../components/ui/Dealer/QuickActions";
+import { useTheme } from "@/components/theme-context";
 
-// Add this custom hook after the imports
-function useChartColor(element: "line" | "text") {
-  const { theme } = useTheme()
-  return useMemo(() => {
-    if (element === "line") {
-      return theme === "dark" ? "#f2b705" : "black"
-    } else if (element === "text") {
-      return theme === "dark" ? "#f2b705" : "black"
-    }
-  }, [theme, element])
+function useChartColor(element: "line" | "text"): string {
+  const { theme } = useTheme();
+  return useMemo(() => (theme === "dark" ? "#f2b705" : "black"), [theme]);
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-2">
         <p className="text-gray-700 font-bold">{label}</p>
         <p className="text-gray-700">Sales: {payload[0].value}</p>
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 export default function DealerDashboard() {
-  const [notifications, setNotifications] = useState(1)
-  const [overviewData, setOverviewData] = useState<OverviewCardData[]>([])
-  const [salesData, setSalesData] = useState<ChartData[]>([])
-  const [engagementData, setEngagementData] = useState<ChartData[]>([])
-  const [inventoryData, setInventoryData] = useState<InventoryItem[]>([])
-  const [inquiryData, setInquiryData] = useState<Inquiry[]>([])
-  const { theme } = useTheme()
-  const lineColor = useChartColor("line")
-  const textColor = useChartColor("text")
+  const [overviewData, setOverviewData] = useState<OverviewCardData[]>([]);
+  const [salesData, setSalesData] = useState<ChartData[]>([]);
+  const [engagementData, setEngagementData] = useState<ChartData[]>([]);
+  const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
+  const [inquiryData, setInquiryData] = useState<Inquiry[]>([]);
 
-  const { data: session } = useSession()
-  const router = useRouter()
+  const lineColor = useChartColor("line");
+  const textColor = useChartColor("text");
 
   useEffect(() => {
-    fetchOverviewData()
-    fetchSalesData()
-    fetchEngagementData()
-    fetchInventoryData()
-    fetchInquiryData()
-  }, [])
+    fetchOverviewData();
+    fetchSalesData();
+    fetchEngagementData();
+    fetchInventoryData();
+    fetchInquiryData();
+  }, []);
 
   const fetchOverviewData = () => {
     const data: OverviewCardData[] = [
@@ -314,9 +307,10 @@ export default function DealerDashboard() {
       { title: "Total Sales", value: formatCurrency(45231.89), change: "+20.1% from last month", icon: FaDollarSign },
       { title: "Active Inquiries", value: 573, change: "+201 since last week", icon: FaUsers },
       { title: "Conversion Rate", value: "15.2%", change: "+2.4% from last month", icon: FaPercent },
-    ]
-    setOverviewData(data)
-  }
+    ];
+    setOverviewData(data);
+  };
+
   const fetchSalesData = () => {
     const data: ChartData[] = [
       { month: "Jan", value: 65000 },
@@ -325,9 +319,9 @@ export default function DealerDashboard() {
       { month: "Apr", value: 81000 },
       { month: "May", value: 56000 },
       { month: "Jun", value: 55000 },
-    ]
-    setSalesData(data)
-  }
+    ];
+    setSalesData(data);
+  };
 
   const fetchEngagementData = () => {
     const data: ChartData[] = [
@@ -337,9 +331,9 @@ export default function DealerDashboard() {
       { month: "Apr", value: 4500 },
       { month: "May", value: 4800 },
       { month: "Jun", value: 5500 },
-    ]
-    setEngagementData(data)
-  }
+    ];
+    setEngagementData(data);
+  };
 
   const fetchInventoryData = () => {
     const data: InventoryItem[] = [
@@ -348,36 +342,19 @@ export default function DealerDashboard() {
       { id: "3", model: "Toyota Camry", year: 2023, price: 27000, status: "Available" },
       { id: "4", model: "Honda Civic", year: 2023, price: 22000, status: "Sold" },
       { id: "5", model: "Chevrolet Silverado", year: 2022, price: 35000, status: "Available" },
-    ]
-    setInventoryData(data)
-  }
+    ];
+    setInventoryData(data);
+  };
 
   const fetchInquiryData = () => {
     const data: Inquiry[] = [
-      {
-        id: "1",
-        name: "John Doe",
-        interest: "Interested in Tesla Model 3",
-        initials: "JD",
-        avatarColor: "bg-blue-500",
-      },
-      {
-        id: "2",
-        name: "Alice Smith",
-        interest: "Requesting test drive for Ford Mustang",
-        initials: "AS",
-        avatarColor: "bg-green-500",
-      },
-      {
-        id: "3",
-        name: "Bob Johnson",
-        interest: "Inquiring about Toyota Camry pricing",
-        initials: "BJ",
-        avatarColor: "bg-yellow-500",
-      },
-    ]
-    setInquiryData(data)
-  }
+      { id: "1", name: "John Doe", interest: "Interested in Tesla Model 3", initials: "JD", avatarColor: "bg-blue-500" },
+      { id: "2", name: "Alice Smith", interest: "Requesting test drive for Ford Mustang", initials: "AS", avatarColor: "bg-green-500" },
+      { id: "3", name: "Bob Johnson", interest: "Inquiring about Toyota Camry pricing", initials: "BJ", avatarColor: "bg-yellow-500" },
+    ];
+    setInquiryData(data);
+  };
+
 
   return (
     <div className="min-h-screen theme-bg">
