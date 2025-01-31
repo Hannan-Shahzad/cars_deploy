@@ -7,15 +7,34 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.logo-color{
+  @apply bg-[#f2b705]
+}
+
+.auth-page-text{
+  @apply text-[#f2b705]
+}
+
+
+.auth-button{
+  @apply bg-[#f2b705] text-black hover:bg-[#f2b705]/90
+}
+
+
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px;
   /* Adjust the width of the scrollbar */
 }
 
 .chart-theme {
-  @apply fill-black dark:fill-[#f2b705];
+  @apply fill-black dark:fill-[#f2b705] ;
 }
 
+
+/* .chart-line-theme {
+  @apply text-black dark:bg-[#f2b705];
+} */
 
 /* 
 .custom-scrollbar::-webkit-scrollbar-thumb {

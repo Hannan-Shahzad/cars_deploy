@@ -86,17 +86,17 @@ export default function SignupPage() {
       <div className="w-full lg:w-2/5 flex justify-center p-4 lg:p-8 overflow-y-auto ">
         <div className="w-full max-w-lg space-y-8 pt-8">
           <div className="flex justify-center items-center mb-8">
-            <div className="w-32 h-32 bg-[#f2b705] rounded-full flex items-center justify-center">
+            <div className="w-32 h-32 logo-color rounded-full flex items-center justify-center">
               <span className="text-4xl font-bold text-black">LOGO</span>
             </div>
           </div>
 
-          <h2 className="text-3xl lg:text-4xl text-center font-bold text-[#f2b705] mb-10">Create Your Account</h2>
+          <h2 className="text-3xl lg:text-4xl text-center font-bold auth-page-text mb-10">Create Your Account</h2>
 
           <form className="space-y-8" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-4">
-                <label className="text-lg text-[#f2b705]" htmlFor="firstName">
+                <label className="text-lg auth-page-text" htmlFor="firstName">
                   First Name
                 </label>
                 <input
@@ -111,7 +111,7 @@ export default function SignupPage() {
                 />
               </div>
               <div className="space-y-4">
-                <label className="text-lg text-[#f2b705]" htmlFor="lastName">
+                <label className="text-lg auth-page-text" htmlFor="lastName">
                   Last Name
                 </label>
                 <input
@@ -128,7 +128,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="text-lg text-[#f2b705]" htmlFor="phone">
+              <label className="text-lg auth-page-text" htmlFor="phone">
                 Phone Number
               </label>
               <div className="relative">
@@ -151,7 +151,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="text-lg text-[#f2b705]" htmlFor="email">
+              <label className="text-lg auth-page-text" htmlFor="email">
                 Email
               </label>
               <div className="relative">
@@ -174,7 +174,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="text-lg text-[#f2b705]" htmlFor="location">
+              <label className="text-lg auth-page-text" htmlFor="location">
                 Location
               </label>
               <div className="relative">
@@ -197,7 +197,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="text-lg text-[#f2b705]" htmlFor="password">
+              <label className="text-lg auth-page-text" htmlFor="password">
                 Password
               </label>
               <div className="relative">
@@ -222,17 +222,14 @@ export default function SignupPage() {
             </div>
             <div>
   <label
-    className={`text-lg block ${
-      theme === "dark" ? "text-[#f2b705]" : "text-black"
-    }`}
+    className={`text-lg block auth-page-text`}
   >
     Role
   </label>
   <div className="flex items-center space-x-10 pl-4">
     <label
-      className={`flex items-center space-x-2 ${
-        theme === "dark" ? "text-[#f2b705]" : "text-black"
-      }`}
+      className={`flex items-center space-x-2 auth-page-text
+        `}
     >
       <input
         type="radio"
@@ -240,14 +237,12 @@ export default function SignupPage() {
         value="user1"
         checked={formData.role === "user1"}
         onChange={handleInputChange}
-        className="appearance-none w-4 h-4 border border-gray-400 rounded-full checked:bg-[#f2b705] checked:border-transparent focus:outline-none"
+        className="appearance-none w-4 h-4 border border-gray-500 rounded-full checked:bg-[#f2b705] bg-gray-100 checked:border-transparent focus:outline-none"
       />
       <span>Buyer</span>
     </label>
     <label
-      className={`flex items-center space-x-2 ${
-        theme === "dark" ? "text-[#f2b705]" : "text-black"
-      }`}
+      className={`flex items-center space-x-2 auth-page-text `}
     >
       <input
         type="radio"
@@ -255,7 +250,7 @@ export default function SignupPage() {
         value="user2"
         checked={formData.role === "user2"}
         onChange={handleInputChange}
-        className="appearance-none w-4 h-4 border border-gray-400 rounded-full checked:bg-[#f2b705] checked:border-transparent focus:outline-none"
+        className="appearance-none w-4 h-4 border border-gray-500 rounded-full checked:bg-[#f2b705] bg-gray-100 checked:border-transparent focus:outline-none"
       />
       <span>Dealer</span>
     </label>
@@ -264,7 +259,7 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              className="w-full bg-[#f2b705] text-black rounded-lg p-4 text-lg font-semibold hover:bg-[#f2b705]/90 transition-colors duration-200 button-hover"
+              className="w-full  auth-button rounded-lg p-4 text-lg font-semibold transition-colors duration-200 button-hover"
             >
               Create Account
             </button>
